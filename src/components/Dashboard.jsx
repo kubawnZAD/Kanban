@@ -11,18 +11,19 @@ export const Dashboard = () => {
     const [Tasks, setTasks] = useState([]);
     const {currentUser, logout} = useAuth();
     let unsubscribe
-    let items
+    
     const navigate = useNavigate()
     const inputRef = useRef()
     useEffect(()=>getTasks,[])
     const taskRef = db.collection("Tasks")
     async function createTask(){
-        
+        if(inputRef.current.value!==""){
         await taskRef.add({
             uid:currentUser.uid,
             name:inputRef.current.value,
             createdAt: serverTimestamp()
         })
+    }
 
     }
     async function getTasks(){
