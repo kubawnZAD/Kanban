@@ -1,8 +1,10 @@
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-import React from 'react';
+import React, {useRef, useState} from 'react';
 
 function MyModal(props) {
+  const [name,setName]= useState('')
+  const inpRef = useRef()
     return (
       <Modal
         {...props}
@@ -16,9 +18,17 @@ function MyModal(props) {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Nazwa zadania:<input type="text" />
+          <form onSubmit={(e)=>{
+            e.preventDefault()
+            
+            props.editTask(name)
+          }}>
+          Nazwa zadania:<input type="text" ref={inpRef} onChange={(e)=>{setName(e.target.value)}}/>
+          <Button onClick={props.onHide} type='submit'>Edit</Button>
+          </form>
         </Modal.Body>
         <Modal.Footer>
+          
           <Button onClick={props.onHide}>Close</Button>
         </Modal.Footer>
       </Modal>

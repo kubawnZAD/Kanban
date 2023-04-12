@@ -1,19 +1,18 @@
 import React, {useState, useRef, useEffect} from 'react'
-import {Card,Button} from "react-bootstrap"
+import {Button} from "react-bootstrap"
 import { useNavigate } from 'react-router-dom';
 import {useAuth} from '../contexts/AuthContext'
 import { db } from '../firebase';
 import { serverTimestamp } from '../firebase';
-import Navbar from './Navbar';
-import {doc,deleteDoc} from "firebase/firestore"
-import MyModal from './MyModal';
+
+import Task from './Task';
+
 
 
 export const Dashboard = () => {
     const [error,setError] = useState("");
     const [Tasks, setTasks] = useState([]);
     const {currentUser, logout} = useAuth();
-    const [modalShow, setModalShow] = React.useState(false);
     
     const navigate = useNavigate()
     const inputRef = useRef()
@@ -35,6 +34,10 @@ export const Dashboard = () => {
         })
         
     }
+    const drag = (e) =>{
+        let el = document.querySelector(".dragging")
+        e.currentTarget.appendChild(el)
+    }
     async function handleLogout(){
         setError("")
         try{
@@ -46,37 +49,26 @@ export const Dashboard = () => {
             console.log(error)
         }
     }
-    const deleteTask = async (id)=>{
-        deleteDoc(doc(db,"Tasks",id))
-    }
+    
 
   return (
-    <>
-    <Navbar></Navbar>
+    <div className='App'>
+    <div style={{display:"flex",position:"relative", width:"100%"}}>
+    <div style={{backgroundColor:"red", width:"200px", height:"200px", margin:"10px" }} 
+    onDragOver={(e)=>drag(e)}>1</div>
+    <div style={{backgroundColor:"red", width:"200px", height:"200px",margin:"10px"}}></div>
+    <div style={{backgroundColor:"red", width:"200px", height:"200px",margin:"10px"}}></div>
+    </div>
     {error ? error : null}
     <input type="text" ref={inputRef}/>
         <Button onClick={createTask}>Stwórz zadanie</Button>
     {Tasks.map(task=>(
-        <Card>
-            <Card.Body>
-            <h2 className='d-flex justify-content-center align-items-center'>{task.name}</h2>
-            
-            
-            
-            </Card.Body>
-            <Button onClick={()=>{deleteTask(task.id)}}>delete task</Button>
-            <Button variant="primary" onClick={() => setModalShow(true)}> Edit Task</Button>
-            <MyModal
-                show={modalShow}
-                onHide={() => setModalShow(false)}
-            />
-            </Card>
-            
+       <Task key={task.id} name={task.name} id={task.id}></Task>
     ))}
     
     <div className='w-100 text-center mt-2'>
         <Button variant="link" onClick={handleLogout}>Wyloguj się</Button>
     </div>
-    </>
+    </div>
   )
 }
